@@ -143,7 +143,7 @@ def send_email(subject, body):
 
     if not sender or not password or not recipients:
         log("EMAIL NOT SENT: SENDER_EMAIL / SENDER_APP_PASSWORD / RECIPIENT_EMAIL secrets are missing.")
-        return
+        return False
 
     msg = MIMEText(body)
     msg["Subject"] = subject
@@ -157,8 +157,10 @@ def send_email(subject, body):
             server.login(sender, password)
             server.sendmail(sender, recipients, msg.as_string())
         log(f"Email sent to {', '.join(recipients)}: {subject}")
+        return True
     except Exception as exc:
         log(f"ERROR sending email: {exc}")
+        return False
 
 
 def main():
@@ -190,19 +192,27 @@ def main():
             for size_label, in_stock in results.items():
                 display_size = "any size" if size_label == "__any__" else size_label
                 key = f"{url}::{size_label}"
-                was_in_stock = state.get(key, False)
+                # state[key] means "already successfully emailed for this
+                # in-stock streak" - NOT just "was in stock last check". If
+                # a send fails (e.g. missing secret), we deliberately leave
+                # it False so the next run retries the email instead of
+                # silently giving up.
+                already_notified = state.get(key, False)
 
                 log(f"[{name}] {display_size}: {'IN STOCK' if in_stock else 'out of stock'}")
 
-                if in_stock and not was_in_stock:
+                if not in_stock:
+                    state[key] = False
+                elif already_notified:
+                    state[key] = True  # still in stock, already told you - don't spam
+                else:
                     subject = f"Zara RO restock: {name} ({display_size})"
                     body = (
                         f"{display_size} is back in stock for:\n{name}\n\n{url}\n\n"
                         f"Detected at {time.strftime('%Y-%m-%d %H:%M:%S')} UTC."
                     )
-                    send_email(subject, body)
-
-                state[key] = in_stock
+                    sent = send_email(subject, body)
+                    state[key] = sent  # only True if the email actually went out
 
             time.sleep(random.uniform(1.0, 2.5))
     finally:
