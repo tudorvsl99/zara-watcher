@@ -53,6 +53,9 @@ Actions → New repository secret**. Add three secrets:
 | `SENDER_APP_PASSWORD` | a Gmail App Password (see below) |
 | `RECIPIENT_EMAIL` | tudor.vsl99@gmail.com (or wherever you want alerts) |
 
+To alert multiple people, put a comma-separated list in `RECIPIENT_EMAIL`,
+e.g. `a@gmail.com,b@gmail.com` — everyone listed gets the same email.
+
 To get a Gmail App Password: https://myaccount.google.com/apppasswords
 (requires 2-Step Verification turned on first, at
 https://myaccount.google.com/security).

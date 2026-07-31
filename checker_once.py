@@ -139,22 +139,24 @@ def send_email(subject, body):
     smtp_server = os.environ.get("SMTP_SERVER", "smtp.gmail.com")
     smtp_port = int(os.environ.get("SMTP_PORT", "587"))
 
-    if not sender or not password or not recipient:
+    recipients = [addr.strip() for addr in (recipient or "").split(",") if addr.strip()]
+
+    if not sender or not password or not recipients:
         log("EMAIL NOT SENT: SENDER_EMAIL / SENDER_APP_PASSWORD / RECIPIENT_EMAIL secrets are missing.")
         return
 
     msg = MIMEText(body)
     msg["Subject"] = subject
     msg["From"] = sender
-    msg["To"] = recipient
+    msg["To"] = ", ".join(recipients)
 
     try:
         context = ssl.create_default_context()
         with smtplib.SMTP(smtp_server, smtp_port) as server:
             server.starttls(context=context)
             server.login(sender, password)
-            server.sendmail(sender, [recipient], msg.as_string())
-        log(f"Email sent: {subject}")
+            server.sendmail(sender, recipients, msg.as_string())
+        log(f"Email sent to {', '.join(recipients)}: {subject}")
     except Exception as exc:
         log(f"ERROR sending email: {exc}")
 
