@@ -1,0 +1,24 @@
+{
+    "products": [
+        {
+            "name": "BERMUDE DENIM TALIE MEDIE",
+            "url": "https://www.zara.com/ro/ro/bermude-denim-talie-medie-zw-collection-p07223040.html?v1=542172208",
+            "sizes": ["ANY"]
+        },
+        {
+            "name": "CIZME COWBOY DIN PIELE CU FLORI",
+            "url": "https://www.zara.com/ro/ro/cizme-cowboy-din-piele-cu-flori-p13008710.html?v1=495707423",
+            "sizes": ["39"]
+        },
+        {
+            "name": "CIZME COWBOY DIN PIELE CU FLORI - NO SIZE",
+            "url": "https://www.zara.com/ro/ro/cizme-cowboy-din-piele-cu-flori-p13008710.html?v1=495707423",
+            "sizes": ["ANY"]
+        },
+        {
+            "name": "PANTALONI POPLIN ZW COLLECTION",
+            "url": "https://www.zara.com/ro/ro/pantaloni-poplin-zw-collection-p09479081.html?v1=545475162",
+            "sizes": ["M"]
+        }
+    ]
+}

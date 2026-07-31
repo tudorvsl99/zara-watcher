@@ -1,0 +1,45 @@
+name: Zara RO Stock Watch
+
+on:
+  schedule:
+    # Every 5 minutes - GitHub's practical floor for scheduled workflows.
+    # Actual firing can lag a few minutes during high platform load; this
+    # is best-effort, not real-time.
+    - cron: "*/5 * * * *"
+  workflow_dispatch: {}  # lets you trigger a run manually from the Actions tab
+
+permissions:
+  contents: write  # needed to commit the updated state.json back to the repo
+
+jobs:
+  check-stock:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Chrome
+        uses: browser-actions/setup-chrome@v1
+
+      - name: Install Python dependencies
+        run: pip install -r cloud/requirements.txt
+
+      - name: Check Zara stock
+        working-directory: cloud
+        env:
+          SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
+          SENDER_APP_PASSWORD: ${{ secrets.SENDER_APP_PASSWORD }}
+          RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
+        run: python checker_once.py
+
+      - name: Save stock state
+        working-directory: cloud
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add state.json
+          git diff --cached --quiet || git commit -m "Update stock state [skip ci]"
+          git push
