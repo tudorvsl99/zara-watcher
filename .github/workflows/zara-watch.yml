@@ -25,10 +25,9 @@ jobs:
         uses: browser-actions/setup-chrome@v1
 
       - name: Install Python dependencies
-        run: pip install -r cloud/requirements.txt
+        run: pip install -r requirements.txt
 
       - name: Check Zara stock
-        working-directory: cloud
         env:
           SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
           SENDER_APP_PASSWORD: ${{ secrets.SENDER_APP_PASSWORD }}
@@ -36,7 +35,6 @@ jobs:
         run: python checker_once.py
 
       - name: Save stock state
-        working-directory: cloud
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
